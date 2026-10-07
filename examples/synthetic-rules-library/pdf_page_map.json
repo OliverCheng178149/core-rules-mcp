@@ -1,0 +1,31 @@
+{
+  "syn": {
+    "pages": [
+      {
+        "pdf_page": 1,
+        "line_start": 1,
+        "line_end": 17
+      },
+      {
+        "pdf_page": 2,
+        "line_start": 18,
+        "line_end": 29
+      },
+      {
+        "pdf_page": 3,
+        "line_start": 30,
+        "line_end": 37
+      },
+      {
+        "pdf_page": 4,
+        "line_start": 38,
+        "line_end": 50
+      },
+      {
+        "pdf_page": 5,
+        "line_start": 51,
+        "line_end": 62
+      }
+    ]
+  }
+}

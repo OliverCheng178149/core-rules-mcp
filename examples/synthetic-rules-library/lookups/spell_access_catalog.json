@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "edition": "synthetic",
+  "provenance": {
+    "source": "synthetic example catalog",
+    "upstream_revision": "synthetic-fixture-1"
+  },
+  "entry_count": 1,
+  "entries": {
+    "lantern spark": {
+      "name": "Lantern Spark",
+      "level": 1,
+      "spell_sources": [
+        {
+          "source": "SYN",
+          "page": 2
+        }
+      ],
+      "base_classes": [
+        {
+          "class_name": "Wizard",
+          "class_source": "SYN"
+        },
+        {
+          "class_name": "Lamplighter",
+          "class_source": "SYN"
+        }
+      ],
+      "optional_class_lists": [
+        {
+          "class_name": "Tinker",
+          "class_source": "SYN",
+          "defined_in_sources": [
+            "SYN Optional Rules"
+          ]
+        }
+      ],
+      "conditional_access": [
+        {
+          "class_name": "Fighter",
+          "feature_name": "Cog Knight Sparkcraft",
+          "access_type": "subclass",
+          "mode": "always_prepared",
+          "minimum_class_level": 3,
+          "semantics": "audited",
+          "detail": "Cog Knights of 3rd level always have this spell prepared.",
+          "source_ref": "SYN p.5"
+        },
+        {
+          "feature_name": "Spark Adept",
+          "access_type": "feat",
+          "mode": "choice",
+          "sub_options": [
+            "Lantern Spark"
+          ],
+          "semantics": "discovery",
+          "detail": "The feat lets a character choose one listed spell.",
+          "source_ref": "SYN p.5"
+        }
+      ]
+    }
+  }
+}

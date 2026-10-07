@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Gear Fatigue",
+    "category": "rule",
+    "books": [
+      {
+        "code": "syn",
+        "hits": [
+          {
+            "line": 5,
+            "pdf_page": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Lantern Spark",
+    "category": "spell",
+    "books": [
+      {
+        "code": "syn",
+        "hits": [
+          {
+            "line": 20,
+            "pdf_page": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Clockwork Compass",
+    "category": "item",
+    "books": [
+      {
+        "code": "syn",
+        "hits": [
+          {
+            "line": 32,
+            "pdf_page": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Brass Warden",
+    "category": "monster",
+    "books": [
+      {
+        "code": "syn",
+        "hits": [
+          {
+            "line": 40,
+            "pdf_page": 4
+          }
+        ]
+      }
+    ]
+  }
+]

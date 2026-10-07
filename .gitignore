@@ -1,0 +1,4 @@
+node_modules/
+.worktrees/
+.DS_Store
+*.log

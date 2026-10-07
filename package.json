@@ -1,0 +1,27 @@
+{
+  "name": "core-rules-mcp",
+  "version": "0.1.0",
+  "description": "Local read-only MCP server for page-anchored lookups in a user-provided 5e rules library.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "core-rules-mcp": "src/index.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "demo": "node --test test/demo.test.js",
+    "selftest": "node src/index.js --selftest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.5",
+    "zod": "^3.25.76"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OliverCheng178149/core-rules-mcp.git"
+  }
+}

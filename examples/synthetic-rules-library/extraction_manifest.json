@@ -1,0 +1,13 @@
+{
+  "library": "Synthetic Clockwork Rules (demo)",
+  "books": [
+    {
+      "code": "syn",
+      "short": "SYN",
+      "title": "Synthetic Clockwork Rules",
+      "full_source_file": "_full_source_synthetic.md",
+      "full_source_lines": 62,
+      "priority": "synthetic demo source"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "known_variants": {
+    "Clockwork Compass": [
+      "Gear Compass"
+    ],
+    "Brass Warden": [
+      "Brass Sentry"
+    ],
+    "Gear Fatigue": [
+      "Cog Wear"
+    ],
+    "Lantern Spark": [
+      "Amber Mote"
+    ]
+  }
+}
