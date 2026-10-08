@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0 - unreleased
+## 0.1.0 - 2026-10-08
 
-First public release candidate: the local read-only MCP server with eight
+First public release: the local read-only MCP server with eight
 lookup tools, two-column OCR reading-order reconstruction, structured
 spell-access and rule-table lookups, MIT license, security notes, a library
 format reference, and an original synthetic example library.
