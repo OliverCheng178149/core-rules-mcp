@@ -1,6 +1,6 @@
 {
   "name": "core-rules-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local read-only MCP server for page-anchored lookups in a user-provided 5e rules library.",
   "type": "module",
   "private": true,
@@ -13,7 +13,7 @@
     "selftest": "node src/index.js --selftest"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.5",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "zod": "^3.25.76"
   },
   "engines": {

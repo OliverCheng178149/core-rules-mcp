@@ -1970,7 +1970,7 @@ function textResponse(text) {
 function buildServer() {
   const server = new McpServer({
     name: "core-rules-mcp",
-    version: "0.1.0"
+    version: "0.1.1"
   });
 
   server.tool(

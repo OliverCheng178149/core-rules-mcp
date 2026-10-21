@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 - 2026-10-22
+
+- Update `@modelcontextprotocol/sdk` to 1.32.1 and refresh the lockfile;
+  `npm audit` now reports no known vulnerabilities. The server only uses the
+  stdio transport, so the advisories in the SDK's HTTP and OAuth dependencies
+  did not reach it, but the lockfile no longer carries them.
+
 ## 0.1.0 - 2026-10-08
 
 First public release: the local read-only MCP server with eight
