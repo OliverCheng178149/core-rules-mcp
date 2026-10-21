@@ -1,12 +1,30 @@
 {
   "name": "core-rules-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local read-only MCP server for page-anchored lookups in a user-provided 5e rules library.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "dnd",
+    "5e",
+    "ttrpg",
+    "rules",
+    "ocr"
+  ],
+  "author": "OliverCheng178149",
   "type": "module",
-  "private": true,
   "bin": {
     "core-rules-mcp": "src/index.js"
   },
+  "files": [
+    "src/",
+    "scripts/",
+    "docs/",
+    "examples/",
+    "CHANGELOG.md",
+    "SECURITY.md"
+  ],
   "scripts": {
     "test": "node --test test/*.test.js && python3 -B -m unittest discover -s test -p \"test_*.py\"",
     "demo": "node --test test/demo.test.js",
@@ -23,5 +41,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/OliverCheng178149/core-rules-mcp.git"
+  },
+  "homepage": "https://github.com/OliverCheng178149/core-rules-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/OliverCheng178149/core-rules-mcp/issues"
   }
 }

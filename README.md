@@ -13,7 +13,33 @@ It is the rules companion to
 [campaign-source-mcp](https://github.com/OliverCheng178149/campaign-source-mcp),
 which routes module and setting cards.
 
-## Install independently
+## Install from npm
+
+Requires Node.js >=18. Point your MCP host at the published package; `npx`
+downloads it on first start. Pin the version so an update never changes your
+server unannounced:
+
+```json
+{
+  "mcpServers": {
+    "core-rules": {
+      "command": "npx",
+      "args": ["-y", "core-rules-mcp@VERSION"],
+      "env": {
+        "CORE_RULES_PATH": "/absolute/path/your-rules-library"
+      }
+    }
+  }
+}
+```
+
+Replace `VERSION` with the release you want, for example the latest on
+[npm](https://www.npmjs.com/package/core-rules-mcp). Alternatively run
+`npm install -g core-rules-mcp` and use `"command": "core-rules-mcp"` with no `args`.
+The package includes `examples/synthetic-rules-library` for a book-free trial; the tests live in this
+repository.
+
+## Install from source
 
 Requires Node.js >=18 and npm. `rg` (ripgrep) is optional; the server has a
 JavaScript search fallback. Python 3 is needed for `npm test` and for the

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-10-22
+
+- Publish to npm: drop `"private": true`, add a `files` list so the package
+  carries the server, docs and synthetic examples, the body-index scripts but not the tests, and
+  add keywords, author, homepage and issue links.
+- README: install from npm with a pinned `npx` version, or globally.
+
 ## 0.2.0 - 2026-10-22
 
 Indexed complete bodies: `lookup_spell`, `lookup_item` and `lookup_monster`
