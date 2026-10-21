@@ -43,6 +43,25 @@ No publisher authorization or license for any third-party book, extraction, or
 catalog is implied. Supply only material you are entitled to use; never
 include private libraries in a public repository or bug report.
 
+## Dependency advisories
+
+core-rules-mcp 0.1.0 shipped a `package-lock.json` in which `npm audit` flags
+8 vulnerable packages: `@modelcontextprotocol/sdk` and seven of its
+dependencies. The SDK's own advisories concern its OAuth client and
+experimental tasks, which this server does not use. `body-parser`,
+`proxy-addr`, `qs`, `ip-address`, `hono` and `@hono/node-server` sit behind
+the SDK's HTTP transport (Express and Hono), which this stdio-only server
+never loads. `fast-uri` is loaded, through the SDK's JSON Schema validator
+`ajv`, but only resolves references in the server's own tool schemas, never
+client or library input; its advisories concern host confusion when parsing
+untrusted URLs. No exploitable path is known. Version 0.1.1 and later carry an
+updated lockfile with none; upgrade and reinstall with `npm ci`.
+
+Dependabot security updates are enabled for this repository, so future
+advisories in the dependency tree arrive as pull requests.
+
+## Reporting
+
 For a suspected issue, prepare a minimal synthetic reproduction with versions
 and expected and actual behaviour. Do not include personal paths, secrets, or
 book text. Report non-sensitive, reproducible bugs through this repository's
