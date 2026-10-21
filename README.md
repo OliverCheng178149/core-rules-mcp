@@ -16,7 +16,8 @@ which routes module and setting cards.
 ## Install independently
 
 Requires Node.js >=18 and npm. `rg` (ripgrep) is optional; the server has a
-JavaScript search fallback.
+JavaScript search fallback. Python 3 is needed for `npm test` and for the
+optional body-index builders.
 
 ```sh
 git clone https://github.com/OliverCheng178149/core-rules-mcp.git
@@ -27,7 +28,8 @@ npm run demo
 ```
 
 `npm test` runs only self-contained synthetic tests: path-boundary and error
-handling, two-column OCR reading order, and an eight-tool stdio demo against
+handling, two-column OCR reading order, indexed complete bodies and their
+builders, and an eight-tool stdio demo against
 `examples/synthetic-rules-library`. `npm run demo` runs the demo alone.
 
 ## Configure an MCP host
@@ -71,7 +73,7 @@ and field. In short:
   `lookups/spell_access_catalog.json` are required; an empty but valid file is
   acceptable for each.
 - `lookups/structured_rule_tables.json` and `lookups/*.md` routing cards are
-  optional.
+  optional, as are the body indexes described below.
 
 For one way to extract page-anchored text from material you own, see
 campaign-source-mcp's
@@ -90,7 +92,23 @@ campaign-source-mcp's
 - `lookup_rule_topic`: rule headings, curated tables, and routing cards.
 
 All tools cap returned context and include file, line, and PDF page pointers.
-Use them as on-demand lookups, not as a startup bulk read.
+Use them as on-demand lookups, not as a startup bulk read. The exception is an
+indexed complete body, below.
+
+## Indexed complete bodies
+
+`lookup_spell`, `lookup_item` and `lookup_monster` can return a whole entry,
+every column and page of it and nothing from its neighbours, when your library
+has an optional body index for that book. You build the index from a layout
+that records your own review of your caches; the bundled builders refuse to
+run if a cache has changed since that review, and the server verifies source
+fingerprints and slice bounds on every call. An invalid index is ignored with
+a visible warning and the legacy lookup runs instead.
+
+No layouts or indexes ship with this repository: they are derived from your
+books and belong in your private library. See
+[docs/indexed-bodies.md](docs/indexed-bodies.md) for the file formats, layout
+format and build commands.
 
 ## Reading order
 

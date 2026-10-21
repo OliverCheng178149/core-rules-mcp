@@ -1,6 +1,6 @@
 {
   "name": "core-rules-mcp",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Local read-only MCP server for page-anchored lookups in a user-provided 5e rules library.",
   "type": "module",
   "private": true,
@@ -8,7 +8,7 @@
     "core-rules-mcp": "src/index.js"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/*.test.js && python3 -B -m unittest discover -s test -p \"test_*.py\"",
     "demo": "node --test test/demo.test.js",
     "selftest": "node src/index.js --selftest"
   },

@@ -20,6 +20,7 @@ of public repositories and bug reports.
 | `lookups/spell_access_catalog.json` | yes | Structured spell-access records. |
 | `lookups/structured_rule_tables.json` | no | Curated, page-verified tables. |
 | `lookups/*.md` | no | Routing cards searched for rule queries. |
+| `lookups/spell_body_index.json`, `item_body_index.json`, `monster_body_index.json` | no | Reviewed complete-body indexes; see [indexed-bodies.md](indexed-bodies.md). |
 
 If any required file is missing or invalid, every tool returns an error until
 it is fixed. A minimal valid set is `pdf_page_map.json` = `{}`,

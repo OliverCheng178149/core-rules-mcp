@@ -5,6 +5,8 @@ import { z } from "zod";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { indexedSpellBodies, indexedItemBodies } from "./spell-body-index.js";
+import { indexedMonsterBodies } from "./monster-body-index.js";
 import {
   formatPageEntries,
   logicalWindowForLine,
@@ -1305,6 +1307,16 @@ function srdHeadingHits(lib, name, type, maxResults) {
 
 function lookupSpellEntity(lib, name, books, maxResults, contextLines) {
   const requestedCodes = parseBookList(books, lib);
+  const selected = selectedFiles(lib, books, "spell");
+  const ordered = requestedCodes || selected.map(abs => [...lib.books.values()].find(book => path.resolve(book.abs) === path.resolve(abs))?.code).filter(Boolean);
+  const indexed = indexedSpellBodies(lib, knownVariants(lib, name), ordered, maxResults);
+  if (indexed.bodies.length) return formatSpellBodyOutput(indexed.bodies.join("\n\n---\n\n"));
+  const legacy = lookupSpellEntityLegacy(lib, name, books, maxResults, contextLines);
+  return indexed.warning ? `${indexed.warning}\n\n${legacy}` : legacy;
+}
+
+function lookupSpellEntityLegacy(lib, name, books, maxResults, contextLines) {
+  const requestedCodes = parseBookList(books, lib);
   if (books) selectedFiles(lib, books, "spell");
   const requestedSet = requestedCodes ? new Set(requestedCodes) : null;
   const candidates = [];
@@ -1775,7 +1787,48 @@ function catalogEntityHits(lib, name, type, requestedSet) {
   return hits;
 }
 
+// Without a book filter, a complete indexed card is found in any installed book
+// (Tasha's and PHB24 companions, the 2025 Faerûn books), the type's own books
+// first; explicit-only settings (Spelljammer, Planescape) still need `books`.
+// The legacy text search keeps the narrower TYPE_BOOKS default.
+function defaultIndexedOrder(lib, books, type) {
+  const requested = parseBookList(books, lib);
+  if (requested) return requested;
+  const own = selectedFiles(lib, books, type)
+    .map(abs => [...lib.books.values()].find(book => path.resolve(book.abs) === path.resolve(abs))?.code)
+    .filter(Boolean);
+  const rest = [...lib.books.keys()].filter(code => !EXPLICIT_ONLY_BOOKS.has(code));
+  return [...new Set([...own, ...rest])];
+}
+
 function lookupStructuredEntity(lib, name, type, books, maxResults, contextLines) {
+  if (type === "item") {
+    const ordered = defaultIndexedOrder(lib, books, type);
+    // A library may register a complete `ftd_full` cache beside a partial
+    // `ftd` mechanics cache; item lookups for `ftd` then read the complete one.
+    const itemOrder = [...new Set(ordered.flatMap(code => code === "ftd" && lib.books.has("ftd_full") ? ["ftd_full"] : [code]))];
+    const indexed = indexedItemBodies(lib, [name, ...knownVariants(lib, name)], itemOrder, maxResults);
+    if (indexed.bodies.length) return indexed.bodies.join("\n\n---\n\n");
+    const legacy = lookupLegacyStructuredEntity(lib, name, type, books, maxResults, contextLines);
+    const warning = indexed.warning || (fs.existsSync(path.join(lib.root, "lookups", "item_body_index.json"))
+      ? "CAUTION: No reviewed complete-item index matched this name/source. Legacy lookup follows; its window may be incomplete. Verify the cited source before using its mechanics."
+      : null);
+    return warning ? `${warning}\n\n${legacy}` : legacy;
+  }
+  if (type === "monster") {
+    const ordered = defaultIndexedOrder(lib, books, type);
+    const indexed = indexedMonsterBodies(lib, [name, ...knownVariants(lib, name)], ordered, maxResults);
+    if (indexed.bodies.length) return indexed.bodies.join("\n\n---\n\n");
+    const legacy = lookupLegacyStructuredEntity(lib, name, type, books, maxResults, contextLines);
+    const warning = indexed.warning || (fs.existsSync(path.join(lib.root, "lookups", "monster_body_index.json"))
+      ? "CAUTION: No reviewed complete-card index matched this name/source. Legacy lookup follows; its window may be incomplete. Verify the cited source before using its mechanics."
+      : null);
+    return warning ? `${warning}\n\n${legacy}` : legacy;
+  }
+  return lookupLegacyStructuredEntity(lib, name, type, books, maxResults, contextLines);
+}
+
+function lookupLegacyStructuredEntity(lib, name, type, books, maxResults, contextLines) {
   const requestedCodes = parseBookList(books, lib);
   if (books) selectedFiles(lib, books, type);
   const requestedSet = requestedCodes ? new Set(requestedCodes) : null;
@@ -1970,7 +2023,7 @@ function textResponse(text) {
 function buildServer() {
   const server = new McpServer({
     name: "core-rules-mcp",
-    version: "0.1.1"
+    version: "0.2.0"
   });
 
   server.tool(
@@ -2075,14 +2128,14 @@ function buildServer() {
 
   server.tool(
     "lookup_monster",
-    "Lookup a monster by name in installed local monster sources.",
+    "Lookup a monster by name in installed local monster sources. Reviewed indexed cards return their entire source-bound body; legacy windows and unresolved extraction are labeled.",
     {
       name: z.string().min(1),
       books: z.union([z.string(), z.array(z.string())]).optional(),
       max_results: z.number().int().min(1).max(MAX_RESULTS).optional().default(10)
         .describe(`Result limit (integer, minimum 1, maximum ${MAX_RESULTS}, default 10).`),
       context_lines: z.number().int().min(0).max(40).optional().default(DEFAULT_LOOKUP_CONTEXT)
-        .describe(`Context lines (integer, minimum 0, maximum 40, default ${DEFAULT_LOOKUP_CONTEXT}).`)
+        .describe(`Legacy fallback context only (integer, minimum 0, maximum 40, default ${DEFAULT_LOOKUP_CONTEXT}); reviewed monster cards always return their full body.`)
     },
     async ({ name, books, max_results, context_lines }) => {
       const lib = loadLibrary();
@@ -2287,7 +2340,7 @@ async function selftest() {
     const spell = lookupEntity(lib, "Rime's Binding Ice", "spell", ["ftd"], 3, 28);
     if (!spell.includes("30 feet") || !spell.includes("Casting Time")) throw new Error("FTD spell lookup failed");
     const item = lookupEntity(lib, "Dragon's Wrath Weapon", "item", ["ftd"], 3, 30);
-    if (!item.includes("## Dragon's Wrath Weapon")) throw new Error("FTD item lookup failed");
+    if (!/Dragon['’]s Wrath Weapon/i.test(item)) throw new Error("FTD item lookup failed");
     for (const topic of ["Gift of the Gem Dragon", "Dragonborn (Gem)", "Drakewarden", "Echo of Dragonsight", "Creating a Hoard"]) {
       const result = lookupEntity(lib, topic, "rule", ["ftd"], 3, 30);
       if (!result.includes(topic)) throw new Error(`FTD rule lookup failed: ${topic}`);
@@ -2313,7 +2366,8 @@ async function selftest() {
     }
     const wdmmAbs = safeRel(lib, "../official_5e_wdmm/wdmm_bestiary_full.md");
     const wdmmBaseAbs = safeRel(lib, "wdmm_bestiary_full.md");
-    if (wdmmAbs !== wdmmBaseAbs || !readWindow(wdmmAbs, 1251, 1).text.includes("## Halaster Blackcloak")) {
+    const halasterHeading = fs.readFileSync(wdmmAbs, "utf8").split(/\r?\n/).findIndex(line => line === "## Halaster Blackcloak") + 1;
+    if (wdmmAbs !== wdmmBaseAbs || !halasterHeading || !readWindow(wdmmAbs, halasterHeading, 1).text.includes("## Halaster Blackcloak")) {
       throw new Error("WDMM sibling open resolution failed");
     }
     const wdmmAlias = rgSearch(lib, "Halaster Blackcloak", { books: "undermountain", type: "monster", maxResults: 3 });
