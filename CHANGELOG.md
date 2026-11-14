@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.2 - 2026-11-14
+
+- Update `zod` to 4.6.7 (from 3.25.76) and `@modelcontextprotocol/sdk` to
+  1.32.2, and refresh the lockfile, which also moves `hono` to 4.13.18,
+  `@hono/node-server` to 2.1.8 and `body-parser` to 2.4.0. `npm audit` again
+  reports no known vulnerabilities. This supersedes the open Dependabot pull
+  requests. The zod advisory (GHSA-mrhx-c7xc-m3w5, memory exhaustion on large
+  arrays with no length limit) reached the `books` parameter; zod 3 has no fix,
+  hence the major update.
+- Published tool schemas change in two harmless ways under zod 4: they no
+  longer state `additionalProperties: false` (unknown arguments were and still
+  are silently dropped), and integer parameters without an explicit bound now
+  carry the safe-integer range (±9007199254740991). Argument validation is
+  otherwise unchanged.
+- `repository.url` uses the `git+https://` form npm expects.
+- `lookup_spell`, `lookup_item` and `lookup_monster` no longer pass an undefined
+  path to `fs.existsSync` when the library has no SRD edition, which printed a
+  DEP0187 deprecation warning on stderr.
+
 ## 0.2.1 - 2026-10-22
 
 - Publish to npm: drop `"private": true`, add a `files` list so the package

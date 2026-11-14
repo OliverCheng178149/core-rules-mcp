@@ -1284,7 +1284,7 @@ function srdFile(lib, type) {
 
 function srdHeadingHits(lib, name, type, maxResults) {
   const srdAbs = srdFile(lib, type);
-  if (!fs.existsSync(srdAbs) || !fs.statSync(srdAbs).isFile()) return [];
+  if (!srdAbs || !fs.existsSync(srdAbs) || !fs.statSync(srdAbs).isFile()) return [];
   const title = String(name || "").trim().replace(/\s+/g, " ");
   const rel = path.relative(lib.root, srdAbs);
   const lines = fs.readFileSync(srdAbs, "utf8").split(/\r?\n/);
@@ -2023,7 +2023,7 @@ function textResponse(text) {
 function buildServer() {
   const server = new McpServer({
     name: "core-rules-mcp",
-    version: "0.2.1"
+    version: "0.2.2"
   });
 
   server.tool(

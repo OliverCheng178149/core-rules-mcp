@@ -57,6 +57,15 @@ client or library input; its advisories concern host confusion when parsing
 untrusted URLs. No exploitable path is known. Version 0.1.1 and later carry an
 updated lockfile with none; upgrade and reinstall with `npm ci`.
 
+core-rules-mcp 0.1.1 to 0.2.1 shipped lockfiles in which `npm audit` later flagged 4
+packages. `hono`, `@hono/node-server` and `body-parser` again sit behind the
+SDK's unused HTTP transport. `zod` 3.25.76 is loaded and validates every tool
+call; its advisory (GHSA-mrhx-c7xc-m3w5) lets a large array with no length
+limit exhaust memory, and the `books` parameter is such an array. Only the
+local MCP host that starts this server can send it arguments, so the exposure
+is limited to that host. zod 3 has no fixed release. Version 0.2.2 and later use
+zod 4.6.7 and carry a lockfile with no known advisories.
+
 Dependabot security updates are enabled for this repository, so future
 advisories in the dependency tree arrive as pull requests.
 

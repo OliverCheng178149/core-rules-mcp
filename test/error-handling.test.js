@@ -10,7 +10,7 @@ import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 const serverPath = path.resolve("src/index.js");
 const validAccess = { schema_version: 1, edition: "fixture", entries: {}, entry_count: 0 };
 
-async function fixture(t, { rgScript, rgMode = 0o755, noRg = false } = {}) {
+async function fixture(t, { rgScript, rgMode = 0o755, noRg = false, captureStderr = false } = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "core-rules-errors-"));
   const client = new Client({ name: "core-rules-error-test", version: "1.0.0" });
   t.after(async () => {
@@ -34,9 +34,12 @@ async function fixture(t, { rgScript, rgMode = 0o755, noRg = false } = {}) {
   }
   const env = { ...process.env, CORE_RULES_PATH: root };
   if (rgScript !== undefined || noRg) env.PATH = path.join(root, "bin");
-  await client.connect(new StdioClientTransport({ command: process.execPath, args: [serverPath], env }));
+  const transport = new StdioClientTransport({ command: process.execPath, args: [serverPath], env, ...(captureStderr ? { stderr: "pipe" } : {}) });
+  const stderr = [];
+  if (captureStderr) transport.stderr.on("data", chunk => stderr.push(String(chunk)));
+  await client.connect(transport);
   const call = (name, args) => client.callTool({ name, arguments: args }, undefined, { timeout: 10000 });
-  return { client, root, bookPath, writeJson, call };
+  return { client, root, bookPath, writeJson, call, stderr: () => stderr.join("") };
 }
 
 function responseText(result) {
@@ -139,8 +142,9 @@ test("numeric parameter descriptions retain limits for hosts that omit numeric s
       if (!["integer", "number"].includes(property.type)) continue;
       const description = property.description || "";
       assert.match(description, /integer/i, `${tool.name}.${name}`);
+      // zod 4 publishes the safe-integer range on every .int(); that is not a limit worth repeating in prose.
       for (const field of ["minimum", "maximum", "default"]) {
-        if (property[field] === undefined) continue;
+        if (property[field] === undefined || Math.abs(property[field]) === Number.MAX_SAFE_INTEGER) continue;
         assert.match(description, new RegExp(`${field} ${property[field]}\\b`, "i"), `${tool.name}.${name} ${field}`);
       }
     }
@@ -235,3 +239,11 @@ for (const noRg of [false, true]) {
     });
   }
 }
+
+test("a spell miss in a library without an SRD edition does not hand fs an undefined path", async t => {
+  const { call, stderr } = await fixture(t, { captureStderr: true });
+  const result = await call("lookup_spell", { name: "Nonexistent Fixture Spell" });
+  assert.notEqual(result.isError, true);
+  await new Promise(resolve => setTimeout(resolve, 300)); // process warnings reach stderr a tick later
+  assert.doesNotMatch(stderr(), /DEP0187|DeprecationWarning/);
+});
